@@ -283,6 +283,47 @@ body {
     box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
+/* Light On Selected / Unselected States */
+.btn.unselected {
+    opacity: 0.35 !important;
+    filter: grayscale(40%);
+    transform: scale(0.96);
+}
+
+.btn-clean.selected {
+    opacity: 1 !important;
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.8), 0 0 10px rgba(16, 185, 129, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4) !important;
+    border: 2px solid #34d399 !important;
+    transform: scale(1.02);
+    animation: pulseGlowGreen 2s infinite ease-in-out !important;
+}
+
+.btn-gambled.selected {
+    opacity: 1 !important;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.8), 0 0 10px rgba(239, 68, 68, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.4) !important;
+    border: 2px solid #f87171 !important;
+    transform: scale(1.02);
+    animation: pulseGlowRed 2s infinite ease-in-out !important;
+}
+
+@keyframes pulseGlowGreen {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), 0 0 8px rgba(16, 185, 129, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(16, 185, 129, 1), 0 0 15px rgba(16, 185, 129, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+}
+
+@keyframes pulseGlowRed {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 8px rgba(239, 68, 68, 0.5), inset 0 0 12px rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(239, 68, 68, 1), 0 0 15px rgba(239, 68, 68, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.6);
+    }
+}
+
 .btn-secondary {
     background: linear-gradient(135deg, #007aff 0%, #0051d5 100%);
     color: white;
@@ -334,7 +375,7 @@ body {
     text-align: center;
     padding: 12px 16px;
     max-width: 280px;
-    margin: 0 auto;
+    margin: 16px auto 24px;
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);

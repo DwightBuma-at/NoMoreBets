@@ -54,6 +54,7 @@ const successText = document.getElementById('successText');
 const downloadAppBadge = document.getElementById('downloadAppBadge');
 const installModal = document.getElementById('installModal');
 const closeInstallBtn = document.getElementById('closeInstallBtn');
+const enableNotifBtn = document.getElementById('enableNotifBtn');
 
 // Initialize App
 function init() {
@@ -83,12 +84,90 @@ function displayCurrentDate() {
     currentDate.textContent = today.toLocaleDateString('en-US', options);
 }
 
-// Update date every minute and check for day change
+// Update date every minute and check for day change & scheduled reminders
 function startRealTimeUpdates() {
+    checkScheduledReminders();
     setInterval(() => {
         displayCurrentDate();
         checkDayChange();
+        checkScheduledReminders();
     }, 60000); // Check every minute
+}
+
+// Request Notification Permission
+function requestNotificationPermission(isManual = false) {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                if (isManual) {
+                    triggerNotification('Notifications Enabled! 🔔', 'You will receive reminders at 8PM, 10PM, 11PM, and a last warning at 11:30PM if you haven\'t logged yet.');
+                }
+            } else if (isManual) {
+                alert('Notification permission was denied. Please enable notifications in your browser/phone settings for NoMoreBets.');
+            }
+        });
+    } else if (isManual) {
+        alert('Notifications are not supported on this browser device.');
+    }
+}
+
+// Trigger Notification
+function triggerNotification(title, message) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+        try {
+            new Notification(title, {
+                body: message,
+                icon: 'assets/icon.png',
+                tag: 'nomorebets-reminder'
+            });
+        } catch (e) {
+            console.log('Notification error:', e);
+        }
+    } else {
+        alert(`${title}\n\n${message}`);
+    }
+}
+
+// Check Scheduled Reminders (8PM, 10PM, 11PM, 11:30PM)
+function checkScheduledReminders() {
+    const logs = getDailyLogs();
+    const today = getTodayString();
+    const todayLog = logs.find(log => log.date === today);
+    
+    // If user already logged today, no reminder needed
+    if (todayLog) return;
+    
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const timeKey = `${hours}_${minutes}`;
+    
+    const storageKey = `gambleFree_notified_${today}_${timeKey}`;
+    if (localStorage.getItem(storageKey)) return; // Already triggered for this slot today
+    
+    const savedName = localStorage.getItem(STORAGE_KEYS.USER_NAME) || 'Friend';
+    
+    let notifTitle = '';
+    let notifMessage = '';
+    
+    if (hours === 20 && minutes === 0) { // 8:00 PM
+        notifTitle = 'NoMoreBets Reminder 🔔';
+        notifMessage = `Hey ${savedName}! From NoMoreBets: You still haven't chosen your status for today. Stay strong!`;
+    } else if (hours === 22 && minutes === 0) { // 10:00 PM
+        notifTitle = 'NoMoreBets Reminder 🌙';
+        notifMessage = `Evening ${savedName}! Don't forget to log whether you stayed gamble-free today.`;
+    } else if (hours === 23 && minutes === 0) { // 11:00 PM
+        notifTitle = 'NoMoreBets Nightly Reminder ⏰';
+        notifMessage = `Almost end of the day, ${savedName}! From NoMoreBets: Log today's progress before midnight.`;
+    } else if (hours === 23 && minutes === 30) { // 11:30 PM
+        notifTitle = '🚨 NoMoreBets LAST WARNING!';
+        notifMessage = `LAST WARNING ${savedName}! From NoMoreBets: You still haven't logged today's choice! Only 30 minutes left!`;
+    }
+    
+    if (notifTitle && notifMessage) {
+        localStorage.setItem(storageKey, 'true');
+        triggerNotification(notifTitle, notifMessage);
+    }
 }
 
 // Check if day has changed
@@ -101,6 +180,8 @@ function checkDayChange() {
     if (!todayLog && (cleanBtn.disabled || gambledBtn.disabled)) {
         cleanBtn.disabled = false;
         gambledBtn.disabled = false;
+        cleanBtn.classList.remove('selected', 'unselected');
+        gambledBtn.classList.remove('selected', 'unselected');
         successMessage.classList.add('hidden');
     }
 }
@@ -147,6 +228,25 @@ function saveDailyLogs(logs) {
     localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(logs));
 }
 
+// Update Button Visual States (Turn on light for chosen status)
+function updateButtonStates(status) {
+    cleanBtn.disabled = true;
+    gambledBtn.disabled = true;
+    cleanBtn.classList.remove('selected', 'unselected');
+    gambledBtn.classList.remove('selected', 'unselected');
+    
+    if (status === 'clean') {
+        cleanBtn.classList.add('selected');
+        gambledBtn.classList.add('unselected');
+    } else if (status === 'gambled') {
+        gambledBtn.classList.add('selected');
+        cleanBtn.classList.add('unselected');
+    } else {
+        cleanBtn.disabled = false;
+        gambledBtn.disabled = false;
+    }
+}
+
 // Check Today's Status
 function checkTodayStatus() {
     const logs = getDailyLogs();
@@ -155,8 +255,7 @@ function checkTodayStatus() {
     
     if (todayLog) {
         // Today already recorded
-        cleanBtn.disabled = true;
-        gambledBtn.disabled = true;
+        updateButtonStates(todayLog.status);
         successMessage.classList.remove('hidden');
         
         if (todayLog.status === 'clean') {
@@ -201,8 +300,7 @@ function recordStatus(status) {
     }
     
     // Update UI
-    cleanBtn.disabled = true;
-    gambledBtn.disabled = true;
+    updateButtonStates(status);
     successMessage.classList.remove('hidden');
     
     if (status === 'clean') {
@@ -272,6 +370,7 @@ function updateTodayStatus(newStatus) {
         saveStreaks(current, longest);
         
         // Update UI
+        updateButtonStates(newStatus);
         if (newStatus === 'clean') {
             successText.textContent = 'WALA KA NAG-SUGAL!';
         } else {
@@ -403,6 +502,12 @@ function setupEventListeners() {
         settingsModal.classList.add('hidden');
     });
     
+    if (enableNotifBtn) {
+        enableNotifBtn.addEventListener('click', () => {
+            requestNotificationPermission(true);
+        });
+    }
+    
     resetBtn.addEventListener('click', showConfirmModal);
     
     // Confirmation Modal
@@ -420,6 +525,7 @@ function handleContinue() {
         localStorage.setItem(STORAGE_KEYS.USER_NAME, name);
         userName.textContent = name;
         welcomeModal.classList.add('hidden');
+        requestNotificationPermission(false);
     } else {
         nameInput.style.borderColor = '#ff6b6b';
         setTimeout(() => {
@@ -526,6 +632,8 @@ function resetAllData() {
     // Reset buttons
     cleanBtn.disabled = false;
     gambledBtn.disabled = false;
+    cleanBtn.classList.remove('selected', 'unselected');
+    gambledBtn.classList.remove('selected', 'unselected');
     successMessage.classList.add('hidden');
     
     lucide.createIcons();
