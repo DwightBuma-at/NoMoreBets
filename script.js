@@ -78,7 +78,7 @@ function init() {
 
 // Check and force update for existing PWA home screen users
 function checkAutoUpdate() {
-    const CURRENT_VERSION = '2.4';
+    const CURRENT_VERSION = '2.5';
     const savedVersion = localStorage.getItem('gambleFree_appVersion');
     if (savedVersion !== CURRENT_VERSION) {
         localStorage.setItem('gambleFree_appVersion', CURRENT_VERSION);
@@ -212,7 +212,7 @@ function triggerNotification(title, message) {
         try {
             new Notification(title, {
                 body: message,
-                icon: 'assets/icon.png?v=2.4',
+                icon: 'assets/icon.png?v=2.5',
                 tag: 'nomorebets-reminder'
             });
         } catch (e) {
@@ -289,10 +289,13 @@ function checkDayChange() {
     }
 }
 
-// Get Today's Date String
+// Get Today's Date String (uses LOCAL date, not UTC — important for UTC+8 Philippines timezone)
 function getTodayString() {
     const today = new Date();
-    return today.toISOString().split('T')[0];
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 // Load Streaks
