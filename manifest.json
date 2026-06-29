@@ -1,0 +1,22 @@
+{
+  "name": "NoMoreBets",
+  "short_name": "NoMoreBets",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#007aff",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

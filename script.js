@@ -55,6 +55,10 @@ const downloadAppBadge = document.getElementById('downloadAppBadge');
 const installModal = document.getElementById('installModal');
 const closeInstallBtn = document.getElementById('closeInstallBtn');
 const enableNotifBtn = document.getElementById('enableNotifBtn');
+const reminderModal = document.getElementById('reminderModal');
+const reminderTitle = document.getElementById('reminderTitle');
+const reminderMessage = document.getElementById('reminderMessage');
+const closeReminderBtn = document.getElementById('closeReminderBtn');
 
 // Initialize App
 function init() {
@@ -70,7 +74,7 @@ function init() {
 
 // Check and force update for existing PWA home screen users
 function checkAutoUpdate() {
-    const CURRENT_VERSION = '2.0';
+    const CURRENT_VERSION = '2.1';
     const savedVersion = localStorage.getItem('gambleFree_appVersion');
     if (savedVersion !== CURRENT_VERSION) {
         localStorage.setItem('gambleFree_appVersion', CURRENT_VERSION);
@@ -145,7 +149,7 @@ function requestNotificationPermission(isManual = false) {
     }
 }
 
-// Trigger Notification
+// Trigger Notification & Branded Alert Modal
 function triggerNotification(title, message) {
     if ('Notification' in window && Notification.permission === 'granted') {
         try {
@@ -157,8 +161,13 @@ function triggerNotification(title, message) {
         } catch (e) {
             console.log('Notification error:', e);
         }
-    } else {
-        alert(`${title}\n\n${message}`);
+    }
+    
+    // Always display custom branded alert modal with logo
+    if (reminderModal && reminderTitle && reminderMessage) {
+        reminderTitle.textContent = title;
+        reminderMessage.textContent = message;
+        reminderModal.classList.remove('hidden');
     }
 }
 
@@ -550,6 +559,13 @@ function setupEventListeners() {
     });
     
     confirmResetBtn.addEventListener('click', resetAllData);
+    
+    // Reminder Modal Close
+    if (closeReminderBtn) {
+        closeReminderBtn.addEventListener('click', () => {
+            reminderModal.classList.add('hidden');
+        });
+    }
 }
 
 // Handle Continue Button
