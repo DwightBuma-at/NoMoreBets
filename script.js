@@ -129,6 +129,17 @@ function displayCurrentDate() {
 // Update date every minute and check for day change & scheduled reminders
 function startRealTimeUpdates() {
     checkScheduledReminders();
+    
+    // Check when app is foregrounded
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            displayCurrentDate();
+            checkDayChange();
+            checkScheduledReminders();
+            checkAutoUpdate(); // also check for PWA updates on resume
+        }
+    });
+
     setInterval(() => {
         displayCurrentDate();
         checkDayChange();
@@ -355,6 +366,13 @@ function checkTodayStatus() {
         } else {
             successText.textContent = 'NAKA-SUGAL KA.';
         }
+    } else {
+        // Explicitly reset UI if it's a new day
+        cleanBtn.disabled = false;
+        gambledBtn.disabled = false;
+        cleanBtn.classList.remove('selected', 'unselected');
+        gambledBtn.classList.remove('selected', 'unselected');
+        successMessage.classList.add('hidden');
     }
 }
 
