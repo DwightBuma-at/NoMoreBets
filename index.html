@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoMoreBets</title>
+    <link rel="icon" type="image/png" href="assets/icon.png">
+    <link rel="apple-touch-icon" href="assets/icon.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="NoMoreBets">
+    <meta name="theme-color" content="#007aff">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Welcome Modal -->
+    <div id="welcomeModal" class="modal">
+        <div class="modal-content">
+            <h1 class="modal-title">Welcome</h1>
+            <p class="modal-text">Enter your name</p>
+            <input type="text" id="nameInput" class="name-input" placeholder="Your name" maxlength="20">
+            <button id="continueBtn" class="btn btn-primary">Continue</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="greeting">Hello, <span id="userName">Friend</span></h1>
+            <p class="date" id="currentDate"></p>
+        </header>
+
+        <!-- Streak Card -->
+        <div id="streakCard" class="card streak-card hidden">
+            <div class="streak-icon">
+                <i data-lucide="flame" class="streak-lucide-icon"></i>
+            </div>
+            <div class="streak-info">
+                <p class="streak-label">Current Streak</p>
+                <p class="streak-count"><span id="currentStreak">0</span> Days</p>
+            </div>
+            <div class="streak-best">
+                <p class="best-label">Best: <span id="longestStreak">0</span></p>
+            </div>
+        </div>
+
+        <!-- Streak Locked Message -->
+        <div id="streakLocked" class="card streak-locked">
+            <div class="locked-icon">
+                <i data-lucide="lock" class="locked-lucide-icon"></i>
+            </div>
+            <div class="locked-info">
+                <p class="locked-title">Streak Unlocked at Day 3</p>
+                <p class="locked-subtitle">Stay gamble-free to unlock your streak!</p>
+            </div>
+        </div>
+
+        <!-- Main Question -->
+        <div class="question-section">
+            <h2 class="question">How did today go?</h2>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="buttons-container">
+            <button id="cleanBtn" class="btn btn-clean">
+                <i data-lucide="check-circle" class="btn-icon"></i>
+                <span class="btn-text">Stayed Gamble-Free</span>
+            </button>
+            <button id="gambledBtn" class="btn btn-gambled">
+                <i data-lucide="x-circle" class="btn-icon"></i>
+                <span class="btn-text">I Gambled Today</span>
+            </button>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="success-message hidden">
+            <p>Today's progress has been recorded.</p>
+            <p class="see-you">See you tomorrow!</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="secondary-buttons">
+            <button id="logsBtn" class="btn btn-secondary-small">
+                <i data-lucide="list" class="btn-icon"></i>
+                <span class="btn-text">View Logs</span>
+            </button>
+            <button id="settingsBtn" class="btn btn-secondary-small">
+                <i data-lucide="settings" class="btn-icon"></i>
+                <span class="btn-text">Settings</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Logs Modal -->
+    <div id="logsModal" class="modal hidden">
+        <div class="modal-content logs-content">
+            <h1 class="modal-title"><i data-lucide="list" style="display: inline; vertical-align: middle; margin-right: 8px;"></i>Logs</h1>
+            <div id="logsList" class="logs-list"></div>
+            <button id="closeLogsBtn" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+
+    <!-- Log Detail Modal -->
+    <div id="logDetailModal" class="modal hidden">
+        <div class="modal-content">
+            <h1 class="modal-title" id="logDetailDate"></h1>
+            <p class="modal-text">Status</p>
+            <p class="log-detail-status" id="logDetailStatus"></p>
+            <button id="closeDetailBtn" class="btn btn-secondary">Close</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content">
+            <h1 class="modal-title"><i data-lucide="settings" style="display: inline; vertical-align: middle; margin-right: 8px;"></i>Settings</h1>
+            <p class="modal-text">Reset your progress</p>
+            <button id="resetBtn" class="btn btn-gambled">
+                <i data-lucide="refresh-cw" class="btn-icon"></i>
+                <span class="btn-text">Reset All Data</span>
+            </button>
+            <button id="closeSettingsBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal hidden">
+        <div class="modal-content confirm-content">
+            <div class="confirm-icon">
+                <i data-lucide="alert-triangle" class="confirm-lucide-icon"></i>
+            </div>
+            <h1 class="modal-title">Are you sure?</h1>
+            <p class="modal-text">This will permanently delete all your data including your name, logs, and streaks. This action cannot be undone.</p>
+            <div class="confirm-buttons">
+                <button id="confirmCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="confirmResetBtn" class="btn btn-gambled">
+                    <i data-lucide="trash-2" class="btn-icon"></i>
+                    <span class="btn-text">Reset All Data</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
