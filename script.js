@@ -3,7 +3,8 @@ const STORAGE_KEYS = {
     USER_NAME: 'gambleFree_userName',
     DAILY_LOGS: 'gambleFree_dailyLogs',
     CURRENT_STREAK: 'gambleFree_currentStreak',
-    LONGEST_STREAK: 'gambleFree_longestStreak'
+    LONGEST_STREAK: 'gambleFree_longestStreak',
+    NOTIF_ENABLED: 'gambleFree_notifEnabled'
 };
 
 // DOM Elements
@@ -55,6 +56,8 @@ const downloadAppBadge = document.getElementById('downloadAppBadge');
 const installModal = document.getElementById('installModal');
 const closeInstallBtn = document.getElementById('closeInstallBtn');
 const enableNotifBtn = document.getElementById('enableNotifBtn');
+const notifIcon = document.getElementById('notifIcon');
+const notifBtnText = document.getElementById('notifBtnText');
 const reminderModal = document.getElementById('reminderModal');
 const reminderTitle = document.getElementById('reminderTitle');
 const reminderMessage = document.getElementById('reminderMessage');
@@ -68,13 +71,14 @@ function init() {
     displayCurrentDate();
     loadStreaks();
     checkTodayStatus();
+    updateNotifBtnUI();
     setupEventListeners();
     startRealTimeUpdates();
 }
 
 // Check and force update for existing PWA home screen users
 function checkAutoUpdate() {
-    const CURRENT_VERSION = '2.1';
+    const CURRENT_VERSION = '2.2';
     const savedVersion = localStorage.getItem('gambleFree_appVersion');
     if (savedVersion !== CURRENT_VERSION) {
         localStorage.setItem('gambleFree_appVersion', CURRENT_VERSION);
@@ -130,6 +134,33 @@ function startRealTimeUpdates() {
         checkDayChange();
         checkScheduledReminders();
     }, 60000); // Check every minute
+// Update Notification Toggle Button UI in Settings
+function updateNotifBtnUI() {
+    if (!enableNotifBtn || !notifBtnText) return;
+    const isEnabled = localStorage.getItem(STORAGE_KEYS.NOTIF_ENABLED) !== 'false';
+    if (isEnabled) {
+        enableNotifBtn.classList.remove('disabled-notif');
+        notifBtnText.textContent = 'Notifications Enabled';
+        if (notifIcon) notifIcon.setAttribute('data-lucide', 'bell');
+    } else {
+        enableNotifBtn.classList.add('disabled-notif');
+        notifBtnText.textContent = 'Notifications Disabled';
+        if (notifIcon) notifIcon.setAttribute('data-lucide', 'bell-off');
+    }
+    if (window.lucide) lucide.createIcons();
+}
+
+// Toggle Notifications Enable / Disable
+function toggleNotifications() {
+    const isCurrentlyEnabled = localStorage.getItem(STORAGE_KEYS.NOTIF_ENABLED) !== 'false';
+    if (isCurrentlyEnabled) {
+        localStorage.setItem(STORAGE_KEYS.NOTIF_ENABLED, 'false');
+        updateNotifBtnUI();
+    } else {
+        localStorage.setItem(STORAGE_KEYS.NOTIF_ENABLED, 'true');
+        updateNotifBtnUI();
+        requestNotificationPermission(true);
+    }
 }
 
 // Request Notification Permission
@@ -173,6 +204,9 @@ function triggerNotification(title, message) {
 
 // Check Scheduled Reminders (8PM, 10PM, 11PM, 11:30PM)
 function checkScheduledReminders() {
+    // If notifications are toggled off by user, return
+    if (localStorage.getItem(STORAGE_KEYS.NOTIF_ENABLED) === 'false') return;
+
     const logs = getDailyLogs();
     const today = getTodayString();
     const todayLog = logs.find(log => log.date === today);
@@ -538,6 +572,7 @@ function setupEventListeners() {
     
     // Settings
     settingsBtn.addEventListener('click', () => {
+        updateNotifBtnUI();
         settingsModal.classList.remove('hidden');
     });
     
@@ -547,7 +582,7 @@ function setupEventListeners() {
     
     if (enableNotifBtn) {
         enableNotifBtn.addEventListener('click', () => {
-            requestNotificationPermission(true);
+            toggleNotifications();
         });
     }
     

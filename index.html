@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=2.1">
+    <link rel="stylesheet" href="style.css?v=2.2">
 </head>
 <body>
     <!-- Welcome Modal -->
@@ -132,8 +132,8 @@
             <h1 class="modal-title"><i data-lucide="settings" style="display: inline; vertical-align: middle; margin-right: 8px;"></i>Settings</h1>
             <p class="modal-text">Manage your preferences</p>
             <button id="enableNotifBtn" class="btn btn-primary" style="margin-bottom: 12px;">
-                <i data-lucide="bell" class="btn-icon"></i>
-                <span class="btn-text">Enable Notifications</span>
+                <i data-lucide="bell" id="notifIcon" class="btn-icon"></i>
+                <span id="notifBtnText" class="btn-text">Enable Notifications</span>
             </button>
             <button id="resetBtn" class="btn btn-gambled">
                 <i data-lucide="refresh-cw" class="btn-icon"></i>
@@ -296,7 +296,7 @@
         </div>
     </div>
 
-    <script src="script.js?v=2.1"></script>
+    <script src="script.js?v=2.2"></script>
     <script>lucide.createIcons();</script>
 </body>
 </html>

@@ -1,9 +1,9 @@
-const CACHE_NAME = 'nomorebets-v2.1';
+const CACHE_NAME = 'nomorebets-v2.2';
 const ASSETS = [
     './',
     './index.html',
-    './style.css?v=2.1',
-    './script.js?v=2.1',
+    './style.css?v=2.2',
+    './script.js?v=2.2',
     './assets/icon.png'
 ];
 
