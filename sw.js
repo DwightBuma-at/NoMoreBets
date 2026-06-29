@@ -1,10 +1,10 @@
-const CACHE_NAME = 'nomorebets-v2.5';
+const CACHE_NAME = 'nomorebets-v2.6';
 const ASSETS = [
     './',
     './index.html',
-    './style.css?v=2.5',
-    './script.js?v=2.5',
-    './assets/icon.png?v=2.5'
+    './style.css?v=2.6',
+    './script.js?v=2.6',
+    './assets/icon.png?v=2.6'
 ];
 
 // Install Event - cache core assets & activate immediately

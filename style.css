@@ -471,30 +471,34 @@ body {
 
 /* Logs */
 .logs-content {
-    max-height: 70vh;
-    overflow-y: auto;
-    text-align: center;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .logs-list {
-    max-height: 50vh;
+    flex: 1;
     overflow-y: auto;
-    margin-bottom: 20px;
-    padding-right: 8px;
+    overflow-x: hidden;
+    margin-bottom: 16px;
+    padding-right: 6px;
+    max-height: 60vh;
+    -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
 }
 
 .logs-list::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .logs-list::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.05);
-    border-radius: 3px;
+    border-radius: 4px;
 }
 
 .logs-list::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.18);
+    border-radius: 4px;
 }
 
 .log-item {
@@ -511,11 +515,36 @@ body {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
-.log-item:hover {
-    transform: translateY(-2px) scale(1.01);
-    border-color: rgba(255, 255, 255, 0.6);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    background: rgba(255, 255, 255, 0.95);
+/* Compact colored pill row for logs */
+.log-item-compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    margin-bottom: 6px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    cursor: pointer;
+    transition: filter 0.2s ease, transform 0.15s ease;
+    color: white;
+    text-align: center;
+}
+
+.log-item-compact.clean {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.log-item-compact.gambled {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+}
+
+.log-item-compact:hover {
+    filter: brightness(1.08);
+    transform: scale(1.01);
 }
 
 .log-date {
@@ -541,13 +570,6 @@ body {
 .log-status.gambled {
     color: #ef4444;
     font-weight: 600;
-}
-
-.log-divider {
-    text-align: center;
-    color: #d1d1d6;
-    margin: 12px 0;
-    font-size: 1.2rem;
 }
 
 .log-detail-status {

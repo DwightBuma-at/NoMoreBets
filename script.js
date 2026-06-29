@@ -78,7 +78,7 @@ function init() {
 
 // Check and force update for existing PWA home screen users
 function checkAutoUpdate() {
-    const CURRENT_VERSION = '2.5';
+    const CURRENT_VERSION = '2.6';
     const savedVersion = localStorage.getItem('gambleFree_appVersion');
     if (savedVersion !== CURRENT_VERSION) {
         localStorage.setItem('gambleFree_appVersion', CURRENT_VERSION);
@@ -212,7 +212,7 @@ function triggerNotification(title, message) {
         try {
             new Notification(title, {
                 body: message,
-                icon: 'assets/icon.png?v=2.5',
+                icon: 'assets/icon.png?v=2.6',
                 tag: 'nomorebets-reminder'
             });
         } catch (e) {
@@ -674,40 +674,27 @@ function showLogs() {
     logsList.innerHTML = '';
     
     if (logs.length === 0) {
-        logsList.innerHTML = '<p style="text-align: center; color: #999;">No logs yet</p>';
+        logsList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px 0;">No logs yet</p>';
     } else {
         // Sort by date descending
         const sortedLogs = [...logs].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        sortedLogs.forEach((log, index) => {
+        sortedLogs.forEach((log) => {
             const logItem = document.createElement('div');
-            logItem.className = 'log-item';
+            logItem.className = `log-item-compact ${log.status}`;
             
-            const date = new Date(log.date);
+            // Parse date parts from local YYYY-MM-DD string to avoid UTC offset issues
+            const [year, month, day] = log.date.split('-').map(Number);
+            const date = new Date(year, month - 1, day);
             const formattedDate = date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+                month: 'short', 
+                day: 'numeric',
+                year: 'numeric'
             });
             
-            const statusText = log.status === 'clean' ? 'WALA KO NAG-SUGAL' : 'NAKA-SUGAL KO';
-            const statusClass = log.status;
-            
-            logItem.innerHTML = `
-                <div class="log-date">${formattedDate}</div>
-                <div class="log-status ${statusClass}">${statusText}</div>
-            `;
-            
+            logItem.textContent = formattedDate;
             logItem.addEventListener('click', () => showLogDetail(log));
             logsList.appendChild(logItem);
-            
-            // Add divider except for last item
-            if (index < sortedLogs.length - 1) {
-                const divider = document.createElement('div');
-                divider.className = 'log-divider';
-                divider.textContent = '—';
-                logsList.appendChild(divider);
-            }
         });
     }
     
