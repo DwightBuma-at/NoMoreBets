@@ -58,12 +58,46 @@ const enableNotifBtn = document.getElementById('enableNotifBtn');
 
 // Initialize App
 function init() {
+    checkAutoUpdate();
+    registerServiceWorker();
     loadUserName();
     displayCurrentDate();
     loadStreaks();
     checkTodayStatus();
     setupEventListeners();
     startRealTimeUpdates();
+}
+
+// Check and force update for existing PWA home screen users
+function checkAutoUpdate() {
+    const CURRENT_VERSION = '2.0';
+    const savedVersion = localStorage.getItem('gambleFree_appVersion');
+    if (savedVersion !== CURRENT_VERSION) {
+        localStorage.setItem('gambleFree_appVersion', CURRENT_VERSION);
+        if ('caches' in window) {
+            caches.keys().then((names) => {
+                names.forEach((name) => caches.delete(name));
+            });
+        }
+    }
+}
+
+// Register Service Worker for PWA updates on home screen
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                if (installingWorker) {
+                    installingWorker.onstatechange = () => {
+                        if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            window.location.reload();
+                        }
+                    };
+                }
+            };
+        }).catch((err) => console.log('SW registration failed:', err));
+    }
 }
 
 // Load User Name
