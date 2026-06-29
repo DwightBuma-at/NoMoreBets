@@ -78,7 +78,7 @@ function init() {
 
 // Check and force update for existing PWA home screen users
 function checkAutoUpdate() {
-    const CURRENT_VERSION = '2.2';
+    const CURRENT_VERSION = '2.3';
     const savedVersion = localStorage.getItem('gambleFree_appVersion');
     if (savedVersion !== CURRENT_VERSION) {
         localStorage.setItem('gambleFree_appVersion', CURRENT_VERSION);
@@ -201,7 +201,7 @@ function triggerNotification(title, message) {
         try {
             new Notification(title, {
                 body: message,
-                icon: 'assets/icon.png',
+                icon: 'assets/icon.png?v=2.3',
                 tag: 'nomorebets-reminder'
             });
         } catch (e) {
