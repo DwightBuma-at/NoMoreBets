@@ -134,6 +134,7 @@ function startRealTimeUpdates() {
         checkDayChange();
         checkScheduledReminders();
     }, 60000); // Check every minute
+}
 // Update Notification Toggle Button UI in Settings
 function updateNotifBtnUI() {
     if (!enableNotifBtn || !notifBtnText) return;
@@ -163,18 +164,32 @@ function toggleNotifications() {
     }
 }
 
-// Request Notification Permission
+// Request Notification Permission (safely handling promise and callback formats)
 function requestNotificationPermission(isManual = false) {
     if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                if (isManual) {
-                    triggerNotification('Notifications Enabled! 🔔', 'You will receive reminders at 8PM, 10PM, 11PM, and a last warning at 11:30PM if you haven\'t logged yet.');
+        try {
+            let resolved = false;
+            const handlePermissionResult = (permission) => {
+                if (resolved) return;
+                resolved = true;
+                if (permission === 'granted') {
+                    if (isManual) {
+                        triggerNotification('Notifications Enabled! 🔔', 'You will receive reminders at 8PM, 10PM, 11PM, and a last warning at 11:30PM if you haven\'t logged yet.');
+                    }
+                } else if (isManual) {
+                    alert('Notification permission was denied. Please enable notifications in your browser/phone settings for NoMoreBets.');
                 }
-            } else if (isManual) {
-                alert('Notification permission was denied. Please enable notifications in your browser/phone settings for NoMoreBets.');
+            };
+
+            const permissionPromise = Notification.requestPermission(handlePermissionResult);
+            if (permissionPromise && typeof permissionPromise.then === 'function') {
+                permissionPromise.then(handlePermissionResult).catch(err => {
+                    console.log('Notification promise error:', err);
+                });
             }
-        });
+        } catch (e) {
+            console.log('Notification permission request error:', e);
+        }
     } else if (isManual) {
         alert('Notifications are not supported on this browser device.');
     }
@@ -605,17 +620,30 @@ function setupEventListeners() {
 
 // Handle Continue Button
 function handleContinue() {
-    const name = nameInput.value.trim();
-    if (name) {
-        localStorage.setItem(STORAGE_KEYS.USER_NAME, name);
-        userName.textContent = name;
-        welcomeModal.classList.add('hidden');
-        requestNotificationPermission(false);
-    } else {
-        nameInput.style.borderColor = '#ff6b6b';
-        setTimeout(() => {
-            nameInput.style.borderColor = '#ddd';
-        }, 1000);
+    try {
+        const name = nameInput.value.trim();
+        if (name) {
+            localStorage.setItem(STORAGE_KEYS.USER_NAME, name);
+            userName.textContent = name;
+            welcomeModal.classList.add('hidden');
+            
+            // Call notification permission request safely and asynchronously
+            setTimeout(() => {
+                requestNotificationPermission(false);
+            }, 100);
+        } else {
+            nameInput.style.borderColor = '#ff6b6b';
+            nameInput.focus();
+            setTimeout(() => {
+                nameInput.style.borderColor = '#ddd';
+            }, 1000);
+        }
+    } catch (e) {
+        console.error('Error in handleContinue:', e);
+        // Fallback: make sure the modal is hidden
+        if (welcomeModal) {
+            welcomeModal.classList.add('hidden');
+        }
     }
 }
 
