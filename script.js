@@ -34,6 +34,26 @@ const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 const confirmModal = document.getElementById('confirmModal');
 const confirmCancelBtn = document.getElementById('confirmCancelBtn');
 const confirmResetBtn = document.getElementById('confirmResetBtn');
+const cleanConfirmModal = document.getElementById('cleanConfirmModal');
+const cleanCancelBtn = document.getElementById('cleanCancelBtn');
+const cleanConfirmBtn = document.getElementById('cleanConfirmBtn');
+const gambledConfirmModal = document.getElementById('gambledConfirmModal');
+const gambledCancelBtn = document.getElementById('gambledCancelBtn');
+const gambledConfirmBtn = document.getElementById('gambledConfirmBtn');
+const changeChoiceModal = document.getElementById('changeChoiceModal');
+const changeChoiceBtn = document.getElementById('changeChoiceBtn');
+const changeToCleanBtn = document.getElementById('changeToCleanBtn');
+const changeToGambledBtn = document.getElementById('changeToGambledBtn');
+const cancelChangeBtn = document.getElementById('cancelChangeBtn');
+const changeConfirmModal = document.getElementById('changeConfirmModal');
+const changeConfirmTitle = document.getElementById('changeConfirmTitle');
+const changeConfirmText = document.getElementById('changeConfirmText');
+const changeConfirmCancelBtn = document.getElementById('changeConfirmCancelBtn');
+const changeConfirmOkBtn = document.getElementById('changeConfirmOkBtn');
+const successText = document.getElementById('successText');
+const downloadAppBadge = document.getElementById('downloadAppBadge');
+const installModal = document.getElementById('installModal');
+const closeInstallBtn = document.getElementById('closeInstallBtn');
 
 // Initialize App
 function init() {
@@ -140,15 +160,9 @@ function checkTodayStatus() {
         successMessage.classList.remove('hidden');
         
         if (todayLog.status === 'clean') {
-            successMessage.innerHTML = `
-                <p>You stayed gamble-free today!</p>
-                <p class="see-you">See you tomorrow!</p>
-            `;
+            successText.textContent = 'WALA KA NAG-SUGAL!';
         } else {
-            successMessage.innerHTML = `
-                <p>You gambled today.</p>
-                <p class="see-you">Tomorrow is a new day!</p>
-            `;
+            successText.textContent = 'NAKA-SUGAL KA.';
         }
     }
 }
@@ -192,16 +206,10 @@ function recordStatus(status) {
     successMessage.classList.remove('hidden');
     
     if (status === 'clean') {
-        successMessage.innerHTML = `
-            <p>You stayed gamble-free today!</p>
-            <p class="see-you">See you tomorrow!</p>
-        `;
+        successText.textContent = 'WALA KA NAG-SUGAL!';
         animateButton(cleanBtn);
     } else {
-        successMessage.innerHTML = `
-            <p>You gambled today.</p>
-            <p class="see-you">Tomorrow is a new day!</p>
-        `;
+        successText.textContent = 'NAKA-SUGAL KA.';
         animateButton(gambledBtn);
     }
 }
@@ -212,6 +220,78 @@ function animateButton(button) {
     setTimeout(() => {
         button.style.animation = '';
     }, 500);
+}
+
+// Show Change Choice Confirmation
+function showChangeConfirm(newStatus) {
+    const logs = getDailyLogs();
+    const today = getTodayString();
+    const todayLog = logs.find(log => log.date === today);
+    
+    if (todayLog) {
+        const oldStatusText = todayLog.status === 'clean' ? 'WALA KO NAG-SUGAL' : 'NAKA-SUGAL KO';
+        const newStatusText = newStatus === 'clean' ? 'WALA KO NAG-SUGAL' : 'NAKA-SUGAL KO';
+        
+        changeConfirmTitle.textContent = 'Change your choice?';
+        changeConfirmText.textContent = `Are you sure you want to change from "${oldStatusText}" to "${newStatusText}"?`;
+        changeConfirmOkBtn.dataset.status = newStatus;
+        
+        changeConfirmModal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+}
+
+// Update Today's Status (for change choice)
+function updateTodayStatus(newStatus) {
+    const logs = getDailyLogs();
+    const today = getTodayString();
+    
+    // Find and update today's log
+    const logIndex = logs.findIndex(log => log.date === today);
+    if (logIndex !== -1) {
+        const oldStatus = logs[logIndex].status;
+        logs[logIndex].status = newStatus;
+        saveDailyLogs(logs);
+        
+        // Recalculate streaks based on updated status
+        let current = parseInt(localStorage.getItem(STORAGE_KEYS.CURRENT_STREAK)) || 0;
+        let longest = parseInt(localStorage.getItem(STORAGE_KEYS.LONGEST_STREAK)) || 0;
+        
+        // If changing from gambled to clean, increment streak
+        if (oldStatus === 'gambled' && newStatus === 'clean') {
+            current++;
+            if (current > longest) {
+                longest = current;
+            }
+        }
+        // If changing from clean to gambled, reset streak
+        else if (oldStatus === 'clean' && newStatus === 'gambled') {
+            current = 0;
+        }
+        
+        saveStreaks(current, longest);
+        
+        // Update UI
+        if (newStatus === 'clean') {
+            successText.textContent = 'WALA KA NAG-SUGAL!';
+        } else {
+            successText.textContent = 'NAKA-SUGAL KA.';
+        }
+        
+        // Check if streak just unlocked (reached day 3)
+        if (current === 3 && newStatus === 'clean') {
+            showStreakUnlockedAnimation();
+        }
+        
+        // Update streak visibility
+        if (current >= 3) {
+            streakCard.classList.remove('hidden');
+            streakLocked.classList.add('hidden');
+        } else {
+            streakCard.classList.add('hidden');
+            streakLocked.classList.remove('hidden');
+        }
+    }
 }
 
 // Show Streak Unlocked Animation
@@ -234,9 +314,74 @@ function setupEventListeners() {
         if (e.key === 'Enter') handleContinue();
     });
     
-    // Action Buttons
-    cleanBtn.addEventListener('click', () => recordStatus('clean'));
-    gambledBtn.addEventListener('click', () => recordStatus('gambled'));
+    // Action Buttons - Show Confirmation Modals
+    cleanBtn.addEventListener('click', () => {
+        cleanConfirmModal.classList.remove('hidden');
+        lucide.createIcons();
+    });
+    gambledBtn.addEventListener('click', () => {
+        gambledConfirmModal.classList.remove('hidden');
+        lucide.createIcons();
+    });
+    
+    // Clean Confirmation Modal
+    cleanCancelBtn.addEventListener('click', () => {
+        cleanConfirmModal.classList.add('hidden');
+    });
+    cleanConfirmBtn.addEventListener('click', () => {
+        cleanConfirmModal.classList.add('hidden');
+        recordStatus('clean');
+    });
+    
+    // Gambled Confirmation Modal
+    gambledCancelBtn.addEventListener('click', () => {
+        gambledConfirmModal.classList.add('hidden');
+    });
+    gambledConfirmBtn.addEventListener('click', () => {
+        gambledConfirmModal.classList.add('hidden');
+        recordStatus('gambled');
+    });
+    
+    // Change Choice
+    changeChoiceBtn.addEventListener('click', () => {
+        changeChoiceModal.classList.remove('hidden');
+        lucide.createIcons();
+    });
+    
+    changeToCleanBtn.addEventListener('click', () => {
+        changeChoiceModal.classList.add('hidden');
+        showChangeConfirm('clean');
+    });
+    
+    changeToGambledBtn.addEventListener('click', () => {
+        changeChoiceModal.classList.add('hidden');
+        showChangeConfirm('gambled');
+    });
+    
+    cancelChangeBtn.addEventListener('click', () => {
+        changeChoiceModal.classList.add('hidden');
+    });
+    
+    // Change Choice Confirmation
+    changeConfirmCancelBtn.addEventListener('click', () => {
+        changeConfirmModal.classList.add('hidden');
+    });
+    
+    changeConfirmOkBtn.addEventListener('click', () => {
+        changeConfirmModal.classList.add('hidden');
+        const newStatus = changeConfirmOkBtn.dataset.status;
+        updateTodayStatus(newStatus);
+    });
+    
+    // Download App Badge
+    downloadAppBadge.addEventListener('click', () => {
+        installModal.classList.remove('hidden');
+        lucide.createIcons();
+    });
+    
+    closeInstallBtn.addEventListener('click', () => {
+        installModal.classList.add('hidden');
+    });
     
     // Logs
     logsBtn.addEventListener('click', showLogs);
@@ -305,7 +450,7 @@ function showLogs() {
                 day: 'numeric' 
             });
             
-            const statusText = log.status === 'clean' ? 'Stayed Gamble-Free' : 'I Gambled Today';
+            const statusText = log.status === 'clean' ? 'WALA KO NAG-SUGAL' : 'NAKA-SUGAL KO';
             const statusClass = log.status;
             
             logItem.innerHTML = `
@@ -340,7 +485,7 @@ function showLogDetail(log) {
     });
     
     logDetailDate.textContent = formattedDate;
-    logDetailStatus.textContent = log.status === 'clean' ? 'Stayed Gamble-Free' : 'I Gambled Today';
+    logDetailStatus.textContent = log.status === 'clean' ? 'WALA KO NAG-SUGAL' : 'NAKA-SUGAL KO';
     logDetailStatus.className = 'log-detail-status ' + log.status;
     
     logsModal.classList.add('hidden');

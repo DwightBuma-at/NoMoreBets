@@ -69,18 +69,22 @@
         <div class="buttons-container">
             <button id="cleanBtn" class="btn btn-clean">
                 <i data-lucide="check-circle" class="btn-icon"></i>
-                <span class="btn-text">Stayed Gamble-Free</span>
+                <span class="btn-text">WALA KO NAG-SUGAL</span>
             </button>
             <button id="gambledBtn" class="btn btn-gambled">
                 <i data-lucide="x-circle" class="btn-icon"></i>
-                <span class="btn-text">I Gambled Today</span>
+                <span class="btn-text">NAKA-SUGAL KO</span>
             </button>
         </div>
 
         <!-- Success Message -->
         <div id="successMessage" class="success-message hidden">
-            <p>Today's progress has been recorded.</p>
+            <p id="successText">Today's progress has been recorded.</p>
             <p class="see-you">See you tomorrow!</p>
+            <button id="changeChoiceBtn" class="btn btn-change-choice">
+                <i data-lucide="repeat" class="btn-icon"></i>
+                <span class="btn-text">Change Choice</span>
+            </button>
         </div>
 
         <!-- Action Buttons -->
@@ -93,6 +97,12 @@
                 <i data-lucide="settings" class="btn-icon"></i>
                 <span class="btn-text">Settings</span>
             </button>
+        </div>
+
+        <!-- Download App Badge -->
+        <div id="downloadAppBadge" class="download-app-badge">
+            <i data-lucide="download" class="download-badge-icon"></i>
+            <span>Download App</span>
         </div>
     </div>
 
@@ -143,6 +153,131 @@
                     <span class="btn-text">Reset All Data</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- Clean Confirmation Modal -->
+    <div id="cleanConfirmModal" class="modal hidden">
+        <div class="modal-content confirm-content">
+            <div class="confirm-icon">
+                <i data-lucide="check-circle" class="confirm-lucide-icon clean-confirm-icon"></i>
+            </div>
+            <h1 class="modal-title">WALA KA NAG-SUGAL?</h1>
+            <p class="modal-text">Confirm that you stayed gamble-free today.</p>
+            <div class="confirm-buttons">
+                <button id="cleanCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="cleanConfirmBtn" class="btn btn-clean">
+                    <i data-lucide="check-circle" class="btn-icon"></i>
+                    <span class="btn-text">Yes, WALA KO NAG-SUGAL</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gambled Confirmation Modal -->
+    <div id="gambledConfirmModal" class="modal hidden">
+        <div class="modal-content confirm-content">
+            <div class="confirm-icon">
+                <i data-lucide="x-circle" class="confirm-lucide-icon gambled-confirm-icon"></i>
+            </div>
+            <h1 class="modal-title">NAKA-SUGAL KA?</h1>
+            <p class="modal-text">Confirm that you gambled today. Tomorrow is a new day!</p>
+            <div class="confirm-buttons">
+                <button id="gambledCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="gambledConfirmBtn" class="btn btn-gambled">
+                    <i data-lucide="x-circle" class="btn-icon"></i>
+                    <span class="btn-text">Yes, NAKA-SUGAL KO</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Choice Modal -->
+    <div id="changeChoiceModal" class="modal hidden">
+        <div class="modal-content confirm-content">
+            <div class="confirm-icon">
+                <i data-lucide="repeat" class="confirm-lucide-icon change-icon"></i>
+            </div>
+            <h1 class="modal-title">Change your choice?</h1>
+            <p class="modal-text">You can update today's log. Pick your new status below.</p>
+            <div class="change-choice-buttons">
+                <button id="changeToCleanBtn" class="btn btn-clean btn-change-option">
+                    <i data-lucide="check-circle" class="btn-icon"></i>
+                    <span class="btn-text">WALA KO NAG-SUGAL</span>
+                </button>
+                <button id="changeToGambledBtn" class="btn btn-gambled btn-change-option">
+                    <i data-lucide="x-circle" class="btn-icon"></i>
+                    <span class="btn-text">NAKA-SUGAL KO</span>
+                </button>
+            </div>
+            <button id="cancelChangeBtn" class="btn btn-secondary">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Change Choice Confirmation Modal -->
+    <div id="changeConfirmModal" class="modal hidden">
+        <div class="modal-content confirm-content">
+            <div class="confirm-icon">
+                <i data-lucide="alert-triangle" class="confirm-lucide-icon change-confirm-icon"></i>
+            </div>
+            <h1 class="modal-title" id="changeConfirmTitle">Are you sure?</h1>
+            <p class="modal-text" id="changeConfirmText">This will change your choice for today.</p>
+            <div class="confirm-buttons">
+                <button id="changeConfirmCancelBtn" class="btn btn-secondary">Cancel</button>
+                <button id="changeConfirmOkBtn" class="btn btn-primary">
+                    <i data-lucide="check" class="btn-icon"></i>
+                    <span class="btn-text">Yes, Change It</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Install Steps Modal -->
+    <div id="installModal" class="modal hidden">
+        <div class="modal-content install-content">
+            <div class="install-header">
+                <img src="assets/icon.png" alt="NoMoreBets" class="install-app-icon">
+                <h1 class="modal-title">Add to Home Screen</h1>
+                <p class="modal-text">Install NoMoreBets for quick access</p>
+            </div>
+            <div class="install-steps">
+                <div class="install-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <p class="step-title">Open in Browser</p>
+                        <p class="step-desc">Open this page in Safari or Chrome</p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <p class="step-title">Click Share</p>
+                        <p class="step-desc">Tap the share button <i data-lucide="share" class="step-inline-icon"></i></p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <p class="step-title">Click View More</p>
+                        <p class="step-desc">Scroll down and tap "More"</p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <p class="step-title">Add to Home Screen</p>
+                        <p class="step-desc">Tap "Add to Home Screen" <i data-lucide="plus-square" class="step-inline-icon"></i></p>
+                    </div>
+                </div>
+                <div class="install-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <p class="step-title">Click Add</p>
+                        <p class="step-desc">Confirm by tapping "Add" in the top right</p>
+                    </div>
+                </div>
+            </div>
+            <button id="closeInstallBtn" class="btn btn-secondary">Got it!</button>
         </div>
     </div>
 
